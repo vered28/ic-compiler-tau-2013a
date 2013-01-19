@@ -1,0 +1,423 @@
+package IC.Parser;
+
+import IC.AST.*;
+
+import IC.*;
+
+import java.util.*;
+
+import java_cup.runtime.*;
+
+/**
+ * The syntax analyzer for the IC language.
+ * Defines terminals, nonterminals and derivation rules (the grammar).
+ * This specification will be the input of Java Cup.
+ *
+ */
+
+
+parser code {:
+
+	/* override method call in case of a unrecovered syntax error */
+	@Override
+	public void unrecovered_syntax_error(Symbol curr_token) throws SyntaxError
+	{
+		throw new SyntaxError(curr_token.left, (curr_token.value).toString());
+	}
+	
+	/* override method call in case of a syntax error, to avoid duplicate error messages */
+	@Override
+	public void syntax_error(Symbol curr_token) { }
+	
+:};
+
+
+
+////////////////////////////////////////////
+// Symbol list (terminals and non-terminals)
+
+/* non-terminals */
+
+nonterminal Program program;
+nonterminal List<ICClass> classDecl_list;
+nonterminal ICClass classDecl;
+nonterminal List<Field> field;                     
+nonterminal List<String> fields_ids_list;       /* for several fields defined in one line */             
+nonterminal Method method;
+nonterminal List<ASTNode> field_or_method;          
+nonterminal Formal formal;
+nonterminal List<Formal> formal_list;
+nonterminal Type type;
+nonterminal Statement stmt_without_var_decl;   /* for bonus (2) */
+nonterminal Statement stmt_var_decl;
+nonterminal Statement stmt;
+nonterminal List<Statement> stmt_list;
+nonterminal UnaryOp unop;
+nonterminal BinaryOp binop;
+nonterminal Literal literal;
+nonterminal Call call;
+nonterminal StaticCall staticCall;
+nonterminal VirtualCall virtualCall;
+nonterminal Expression expr;
+nonterminal List<Expression> expr_list;
+nonterminal Location location;
+
+
+/* terminals */
+
+terminal LP, RP, LB, RB, LCBR, RCBR;     
+terminal PLUS, MINUS, MULTIPLY, DIVIDE, MOD;
+
+terminal UMINUS; /* only for precedence */
+
+terminal ASSIGN, EQUAL, NEQUAL, LT, LTE, GT, GTE;
+terminal LNEG, LOR, LAND, TRUE, FALSE;
+terminal COMMA, SEMI, DOT;
+terminal STATIC, INT, BOOLEAN, VOID, STRING, NULL, THIS;
+terminal WHILE, BREAK, CONTINUE, RETURN;
+terminal IF, ELSE;
+terminal NEW, LENGTH, CLASS, EXTENDS;
+terminal String ID; 
+terminal String CLASS_ID;
+terminal String INTEGER; 
+terminal String QUOTE;
+
+
+//////////////////////////
+// Precedence declarations
+
+precedence right ASSIGN;
+precedence left LOR;
+precedence left LAND;
+precedence left EQUAL, NEQUAL;
+precedence left LT, LTE, GT, GTE;
+precedence left PLUS, MINUS;
+precedence left DIVIDE, MULTIPLY, MOD;
+precedence right UMINUS, LNEG;
+precedence left LP, RP, LB, RB, DOT;
+precedence left IF, ELSE;
+
+
+//////////////
+// The grammar
+
+
+program ::= classDecl_list:cdl
+        {: RESULT = new Program(cdl); :}
+;
+
+
+classDecl ::= CLASS CLASS_ID:cid LCBR RCBR
+	      {: RESULT = new ICClass(cidleft, cid, new ArrayList<Field>(), new ArrayList<Method>()); :}  
+	      | CLASS CLASS_ID:cid1 EXTENDS CLASS_ID:cid2 LCBR RCBR
+	      {: RESULT = new ICClass(cid1left, cid1, cid2, new ArrayList<Field>(), new ArrayList<Method>()); :}
+	      | CLASS CLASS_ID:cid LCBR field_or_method:fm RCBR
+	      {: 
+			 List<Field> f = new ArrayList<Field>();	      
+	         List<Method> m = new ArrayList<Method>();
+	         for (ASTNode e : fm)   /* adding fields and methods */
+	         {
+	            if (e instanceof Field) { f.add((Field)e); }
+	            if (e instanceof Method) { m.add((Method)e); }  
+	         }	
+	         
+	      	 RESULT = new ICClass(cidleft, cid, f, m); 
+	      :}
+	      | CLASS CLASS_ID:cid1 EXTENDS CLASS_ID:cid2 LCBR field_or_method:fm RCBR
+	      {: 
+			 List<Field> f = new ArrayList<Field>();	      
+	         List<Method> m = new ArrayList<Method>();
+	         for (ASTNode e : fm)  /* adding fields and methods */
+	         {
+	            if (e instanceof Field) { f.add((Field)e); }
+	            if (e instanceof Method) { m.add((Method)e); }  
+	         }	
+	         
+	      	 RESULT = new ICClass(cid1left, cid1, cid2, f, m); 
+	      :}    
+; 
+
+
+classDecl_list ::=  /* empty */
+ 			   {: RESULT = new ArrayList<ICClass>(); :}
+ 			   |  classDecl_list:l classDecl:cls
+ 			   {: 
+ 			      l.add(cls);
+ 			      RESULT = l; 
+ 			   :}
+;
+ 			   
+ 			   
+field ::= type:t fields_ids_list:fil SEMI 
+	   	{:
+	   	   List<Field> l = new ArrayList<Field>();
+	   	   for (String e : fil)
+	   	   {
+	   	      l.add(new Field(t, e));
+	   	   } 
+	   	   
+	       RESULT = l;
+	    :} 
+; 
+
+fields_ids_list ::= ID:id
+                {: 
+                   List<String> l = new ArrayList<String>();
+                   l.add(id);
+                   RESULT = l; 
+                :}
+                | fields_ids_list:l COMMA ID:id 
+                {:
+                   l.add(id);
+                   RESULT = l; 
+                :}
+;
+
+
+method ::= type:t ID:mid LP formal_list:formlst RP LCBR stmt_list:sl RCBR
+          {: RESULT = new VirtualMethod(t, mid, formlst, sl); :}
+          |  type:t ID:mid LP RP LCBR stmt_list:sl RCBR
+          {: RESULT = new VirtualMethod(t, mid, new ArrayList<Formal>(), sl); :}
+          |  VOID ID:mid LP formal_list:formlst RP LCBR stmt_list:sl RCBR
+          {: RESULT = new VirtualMethod(new PrimitiveType(midleft, DataTypes.VOID), mid, formlst, sl); :}  
+          |  VOID ID:mid LP RP LCBR stmt_list:sl RCBR
+          {: RESULT = new VirtualMethod(new PrimitiveType(midleft, DataTypes.VOID), mid, new ArrayList<Formal>(), sl); :}   
+	      |  STATIC type:t ID:mid LP formal_list:formlst RP LCBR stmt_list:sl RCBR
+          {: RESULT = new StaticMethod(t, mid, formlst, sl); :}
+          |  STATIC type:t ID:mid LP RP LCBR stmt_list:sl RCBR
+          {: RESULT = new StaticMethod(t, mid, new ArrayList<Formal>(), sl); :}
+          |  STATIC VOID ID:mid LP formal_list:formlst RP LCBR stmt_list:sl RCBR
+          {: RESULT = new StaticMethod(new PrimitiveType(midleft, DataTypes.VOID), mid, formlst, sl); :}  
+          |  STATIC VOID ID:mid LP RP LCBR stmt_list:sl RCBR
+          {: RESULT = new StaticMethod(new PrimitiveType(midleft, DataTypes.VOID), mid, new ArrayList<Formal>(), sl); :}   
+; 
+
+
+
+field_or_method ::= field:f 
+                {: 
+                   List<ASTNode> l = new ArrayList<ASTNode>();
+                   l.addAll(f);         /* as field is of type List<Field> */ 
+                   RESULT = l;
+                :}
+                | method:m 
+                {: 
+                   List<ASTNode> l = new ArrayList<ASTNode>();
+                   l.add(m);         
+                   RESULT = l;
+                :}
+                | field_or_method:l field:f
+                {:
+                   l.addAll(f);       /* as field is of type List<Field> */ 
+                   RESULT = l; 
+                :}
+                | field_or_method:l method:m
+                {:
+                   l.add(m);
+                   RESULT = l; 
+                :}
+;
+
+
+		   
+formal ::= type:t ID:fid  
+	   {: RESULT = new Formal(t, fid); :}
+;  
+	   	   
+formal_list ::=	formal:f
+		    {: 
+  			   List<Formal> l = new ArrayList<Formal>();
+  			   l.add(f);
+  			   RESULT = l;
+  			:}
+  			|  formal_list:flst COMMA formal:f 
+  			{: 
+  			   flst.add(f);
+  			   RESULT = flst;
+  			:}		  
+; 
+  	
+
+stmt_without_var_decl ::= location:l ASSIGN expr:e SEMI  	/* for bonus (2) */
+     {: RESULT = new Assignment(l, e);  :}
+     | call:c SEMI
+     {: RESULT = new CallStatement(c); :}
+     | RETURN:r SEMI
+     {: RESULT = new Return(rleft); :}
+     | RETURN:r expr:e SEMI
+     {: RESULT = new Return(rleft, e); :}
+     | IF LP expr:e RP stmt_without_var_decl:s1 ELSE stmt_without_var_decl:s2
+     {: RESULT = new If(e, s1, s2); :} 
+     | IF LP expr:e RP stmt_without_var_decl:s
+     {: RESULT = new If(e, s); :}
+     | WHILE LP expr:e RP stmt_without_var_decl:s
+     {: RESULT = new While(e, s); :}
+     | BREAK:b SEMI
+     {: RESULT = new Break(bleft); :}
+     | CONTINUE:c SEMI
+     {: RESULT = new Continue(cleft); :}
+     | LCBR:s stmt_list:sl RCBR 
+     {: RESULT = new StatementsBlock(sleft, sl); :}
+;
+
+stmt_var_decl ::= type:t ID:id SEMI 
+     		  {: RESULT = new LocalVariable(t, id); :}
+              | type:t ID:id ASSIGN expr:e SEMI 
+              {: RESULT = new LocalVariable(t, id, e); :}
+;
+
+stmt ::= stmt_without_var_decl:s1         /* one of two prev. statements types */
+     {: RESULT = s1; :}  
+     | stmt_var_decl:s2
+     {: RESULT = s2; :}
+;
+
+
+stmt_list ::=    /* empty */  	
+ 		  {: RESULT = new ArrayList<Statement>(); :}
+ 		  | stmt_list:l stmt:s
+		  {: 
+		  	 l.add(s);	
+		  	 RESULT = l; 
+		  :}
+;
+		  
+expr ::= location:loc
+     {: RESULT = loc; :}
+     | call:c
+     {: RESULT = c; :}
+     | THIS:t
+     {: RESULT = new This(tleft); :}
+     | NEW CLASS_ID:cid LP RP
+     {: RESULT = new NewClass(cidleft, cid); :}
+     | NEW type:t LB expr:e RB
+     {: RESULT = new NewArray(t, e); :}
+     | expr:e DOT LENGTH
+     {: RESULT = new Length(e); :}
+     | binop:b
+     {: RESULT = b; :}
+     | unop:u
+     {: RESULT = u; :}
+     | literal:l
+     {: RESULT = l; :}
+     | LP expr:e RP
+     {: RESULT = e; :}
+;
+
+
+expr_list ::= expr:e
+          {: 
+             List<Expression> l = new ArrayList<Expression>();
+             l.add(e);
+             RESULT = l; 
+          :}
+          | expr_list:l COMMA expr:e
+          {: 
+             l.add(e);
+             RESULT = l; 
+          :}
+;
+
+
+call ::= staticCall:sc	
+     {: RESULT = sc; :}	
+     | virtualCall:vc  
+     {: RESULT = vc; :}	
+;
+
+
+staticCall ::= CLASS_ID:cid DOT ID:id LP RP
+           {: RESULT = new StaticCall(cidleft, cid, id, new ArrayList<Expression>()); :}
+           | CLASS_ID:cid DOT ID:id LP expr_list:el RP	
+           {: RESULT = new StaticCall(cidleft, cid, id, el); :}
+;
+
+
+virtualCall ::= ID:id LP RP
+           {: RESULT = new VirtualCall(idleft, id, new ArrayList<Expression>()); :}
+           | expr:e DOT ID:id LP RP	
+           {: RESULT = new VirtualCall(idleft, e, id, new ArrayList<Expression>()); :}
+           | ID:id LP expr_list:el RP	
+           {: RESULT = new VirtualCall(idleft, id, el); :} 
+           | expr:e DOT ID:id LP expr_list:el RP	
+           {: RESULT = new VirtualCall(idleft, e, id, el); :}   
+;   
+
+
+location ::= ID:id
+         {: RESULT = new VariableLocation(idleft, id); :}
+         | expr:e DOT ID:id
+         {: RESULT = new VariableLocation(idleft, e, id); :}
+         | expr:e1 LB expr:e2 RB
+         {: RESULT = new ArrayLocation(e1, e2); :}
+;      
+           
+
+binop ::= expr:e1 PLUS expr:e2
+      {: RESULT = new MathBinaryOp(e1, BinaryOps.PLUS, e2); :}
+      | expr:e1 MINUS expr:e2
+      {: RESULT = new MathBinaryOp(e1, BinaryOps.MINUS, e2); :}
+      | expr:e1 MULTIPLY expr:e2
+      {: RESULT = new MathBinaryOp(e1, BinaryOps.MULTIPLY, e2); :}
+      | expr:e1 DIVIDE expr:e2
+      {: RESULT = new MathBinaryOp(e1, BinaryOps.DIVIDE, e2); :}
+      | expr:e1 MOD expr:e2
+      {: RESULT = new MathBinaryOp(e1, BinaryOps.MOD, e2); :}
+      | expr:e1 LAND expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LAND, e2); :}
+      | expr:e1 LOR expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LOR, e2); :}
+      | expr:e1 LT expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LT, e2); :}
+      | expr:e1 LTE expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LTE, e2); :}
+      | expr:e1 GT expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.GT, e2); :}
+      | expr:e1 GTE expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.GTE, e2); :}
+      | expr:e1 EQUAL expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.EQUAL, e2); :}
+      | expr:e1 NEQUAL expr:e2
+      {: RESULT = new LogicalBinaryOp(e1, BinaryOps.NEQUAL, e2); :}     
+;
+
+
+unop ::= MINUS expr:e
+     {: RESULT = new MathUnaryOp(UnaryOps.UMINUS, e); :}
+     %prec UMINUS
+     | LNEG expr:e
+     {: RESULT = new LogicalUnaryOp(UnaryOps.LNEG, e); :}
+;
+
+
+type ::= INT:t 
+ 	 {: RESULT = new PrimitiveType(tleft, DataTypes.INT); :}  
+ 	 | BOOLEAN:t
+ 	 {: RESULT = new PrimitiveType(tleft, DataTypes.BOOLEAN); :} 
+ 	 | STRING:t
+ 	 {: RESULT = new PrimitiveType(tleft, DataTypes.STRING); :} 
+ 	 | CLASS_ID:t
+ 	 {: RESULT = new UserType(tleft, t); :}
+ 	 | type:t LB RB    /* array */ 
+ 	 {: 
+ 	    t.incrementDimension(); 
+ 	 	RESULT = t;
+ 	 :}   
+;
+
+
+literal ::= INTEGER:i 
+        {: RESULT = new Literal(ileft, LiteralTypes.INTEGER, i); :}
+        | QUOTE:q  
+        {: RESULT = new Literal(qleft, LiteralTypes.STRING, q); :}
+        | TRUE:t  
+        {: RESULT = new Literal(tleft, LiteralTypes.TRUE); :}
+        | FALSE:f  
+        {: RESULT = new Literal(fleft, LiteralTypes.FALSE); :}
+        | NULL:n  
+        {: RESULT = new Literal(nleft, LiteralTypes.NULL); :}
+;
+
+
+
+
