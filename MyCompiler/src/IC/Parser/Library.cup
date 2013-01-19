@@ -1,0 +1,143 @@
+package IC.Parser;
+
+import IC.AST.*;
+
+import IC.*;
+
+import java.util.*;
+
+import java_cup.runtime.*;
+
+/**
+ * The syntax analyzer for the IC library sinature.
+ * Defines terminals, nonterminals and derivation rules (the grammar).
+ * This specification will be the input of Java Cup.
+ *
+ */
+
+parser code {:
+
+	/* override method call in case of a unrecovered syntax error */
+	@Override
+	public void unrecovered_syntax_error(Symbol curr_token) throws SyntaxError
+	{
+		throw new SyntaxError(curr_token.left, (curr_token.value).toString());
+	}
+	
+	/* override method call in case of a syntax error, to avoid duplicate error messages */
+	@Override
+	public void syntax_error(Symbol curr_token) { }
+	
+:};
+
+
+
+////////////////////////////////////////////
+// Symbol list (terminals and non-terminals)
+
+/* non-terminals */
+
+nonterminal ICClass libic;
+nonterminal LibraryMethod libmethod;
+nonterminal List<Method> libmethod_list;
+nonterminal Formal formal;
+nonterminal List<Formal> formal_list;
+nonterminal Type type;
+
+/* terminals */
+
+terminal LP, RP, LB, RB, LCBR, RCBR;
+terminal PLUS, MINUS, MULTIPLY, DIVIDE, MOD;
+
+terminal UMINUS; /* only for precedence */
+
+terminal ASSIGN, EQUAL, NEQUAL, LT, LTE, GT, GTE;
+terminal LNEG, LOR, LAND, TRUE, FALSE;
+terminal COMMA, SEMI, DOT;
+terminal STATIC, INT, BOOLEAN, VOID, STRING, NULL, THIS;
+terminal WHILE, BREAK, CONTINUE, RETURN;
+terminal IF, ELSE;
+terminal NEW, LENGTH, CLASS, EXTENDS;
+terminal String ID; 
+terminal String CLASS_ID;
+terminal String INTEGER; 
+terminal String QUOTE;
+
+
+//////////////////////////
+// Precedence declarations
+
+precedence left LP, RP, LB, RB;
+
+
+//////////////
+// The grammar
+			
+
+libic ::= CLASS CLASS_ID:cid LCBR libmethod_list:methlst RCBR
+	  {: RESULT = new ICClass(cidleft, cid, new ArrayList<Field>(), methlst); :}  
+; 
+	  
+	 	    
+libmethod ::= STATIC type:t ID:mid LP formal_list:formlst RP SEMI
+          {: RESULT = new LibraryMethod(t, mid, formlst); :}
+          |   STATIC type:t ID:mid LP RP SEMI
+          {: RESULT = new LibraryMethod(t, mid, new ArrayList<Formal>()); :}
+          |   STATIC VOID ID:mid LP formal_list:formlst RP SEMI
+          {: RESULT = new LibraryMethod(new PrimitiveType(midleft, DataTypes.VOID), mid, formlst); :}  
+          |   STATIC VOID ID:mid LP RP SEMI
+          {: RESULT = new LibraryMethod(new PrimitiveType(midleft, DataTypes.VOID), mid, new ArrayList<Formal>()); :}   
+; 
+	  
+	  
+libmethod_list ::= libmethod:meth
+  			   {: 
+  			   	  List<Method> l = new ArrayList<Method>();
+  			   	  l.add(meth);
+  			   	  RESULT = l;
+  			   :}
+  			   |  libmethod_list:lmlst libmethod:meth
+  			   {: 
+  			   	  lmlst.add(meth);
+  			   	  RESULT = lmlst;
+  			   :}
+; 
+  			   
+formal ::= type:t ID:fid  
+	   {: RESULT = new Formal(t, fid); :}
+;  
+	   
+	   
+formal_list ::=	formal:f
+		    {: 
+  			   List<Formal> l = new ArrayList<Formal>();
+  			   l.add(f);
+  			   RESULT = l;
+  			:}
+  			|  formal_list:flst COMMA formal:f 
+  			{: 
+  			   flst.add(f);
+  			   RESULT = flst;
+  			:}		  
+; 
+  			   
+
+type ::= INT:t 
+ 	 {: RESULT = new PrimitiveType(tleft, DataTypes.INT); :}  
+ 	 | BOOLEAN:t
+ 	 {: RESULT = new PrimitiveType(tleft, DataTypes.BOOLEAN); :} 
+ 	 | STRING:t
+ 	 {: RESULT = new PrimitiveType(tleft, DataTypes.STRING); :} 
+ 	 | CLASS_ID:t
+ 	 {: RESULT = new UserType(tleft, t); :}
+ 	 | type:t LB RB    /* array */ 
+ 	 {: 
+ 	    t.incrementDimension(); 
+ 	 	RESULT = t;
+ 	 :}   
+;
+ 	 
+ 	 
+		   
+  			   
+	  
