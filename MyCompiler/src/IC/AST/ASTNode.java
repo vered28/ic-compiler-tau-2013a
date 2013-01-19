@@ -11,6 +11,20 @@ public abstract class ASTNode {
 
 	private int line;
 
+	/**
+	 * will hold the number of registers required to store the value of the ASTNode
+	 * (e.g. 2 registers for array location)
+	 */
+	private int requiredRegs;
+
+	public int getRequiredRegs() {
+		return requiredRegs;
+	}
+
+	public void setRequiredRegs(int requiredRegs) {
+		this.requiredRegs = requiredRegs;
+	}
+	
 	// Reference to symbol table of enclosing scope.
 	private SymbolTable enclosingScope;
 

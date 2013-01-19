@@ -1,11 +1,9 @@
 package IC.SymbolTable;
 
 import IC.AST.ICClass;
-import IC.SemanticAnalysis.*; 
-
-import IC.TypeTable.*;
-
-import IC.AST.ICClass;
+import IC.SemanticAnalysis.SymbolTableBuilder;
+import IC.TypeTable.SemanticError;
+import IC.TypeTable.TypeTable;
 
 /**
  * Class symbol class.
