@@ -12,7 +12,7 @@ import IC.TypeTable.*;
 
 public class SymbolTable {
 	
-	private int depth;
+	protected int depth;
     protected String id;
     protected SymbolTable parentSymbolTable;
     private List<SymbolTable> childrenTables;
@@ -49,6 +49,10 @@ public class SymbolTable {
     	return this.depth;
     }
     
+    public void setDepth(int Depth) {
+    	this.depth = depth;
+    }
+    
     public String getID() {
     	return this.id;
     }
@@ -70,7 +74,7 @@ public class SymbolTable {
     }
     
     
-    private boolean hasNoParentScope() {
+    protected boolean hasNoParentScope() {
     	return (this.parentSymbolTable == null) || 
     			(isStaticScope() && (getParent() instanceof ClassSymbolTable)); 
     			//e.g. class static method scope has no parent scope. 

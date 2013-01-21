@@ -1,6 +1,9 @@
 package IC;
 
 import IC.*;    
+import IC.LIR.TranslatePropagatingVisitor;
+import IC.LIR.OptTranslatePropagatingVisitor;
+import IC.LIR.RegCounterVisitor;
 import IC.Parser.*;
 import IC.AST.*; 
 import IC.SemanticAnalysis.SemanticChecks;
@@ -24,17 +27,22 @@ public class Compiler {
 	private static boolean icfile_flag=false;
 	private static boolean printast_flag=false;
 	private static boolean symtab_flag=false;
+	private static boolean printlir_flag=false;
+	private static boolean optlir_flag=false;
 	
     
 	/** 
      * Reads an IC program, and performs lexical analysis and parsing (+ builds an AST), 
-     * and checks for lexical and syntax errors.
+     * and checks for lexical, syntactic and semantic errors.
+     * Finally, parses translates to LIR code. 
      * 
      * Optional parameters: library file add, -print-ast commant for AST and printing.
      * @param: input IC program code file path.
      * @param optional: -L<library_path>, path to IC library signature (not a default one). 
      * @param optional: -print-ast, to pretty-print the AST.
-     * 
+     * @param optional: -dump-symtab, to print symbol tables and type table.
+     * @param optional: -print-lir to print the LIR translation of the IC code.
+     * @param optional: -opt-lir to translate the LIR code with optimizations.
      */
 	public static void main(String[] args) {
 		
@@ -89,6 +97,28 @@ public class Compiler {
                 	symtab_flag = true;
                 	continue;
                 }
+        	}
+        	
+        	if (s.equals("-print-lir")) { //-print-lir requested
+        		
+        		if (printlir_flag) { //already requested -print-lir earlier
+        			System.out.println("Error: -print-lir is given more than once.");
+        			System.exit(1);
+        		} else {
+        			printlir_flag = true;
+        			continue;
+        		}
+        	}
+        	
+        	if (s.equals("-opt-lir")) { //-opt-lir requested
+        		
+        		if (optlir_flag){ //already requested -opt-lir earlier
+        			System.out.println("Error: -print-lir is given more than once.");
+        			System.exit(1);
+        		} else {
+        			optlir_flag = true;
+        			continue;
+        		}
         	}
         	
             
@@ -231,7 +261,31 @@ public class Compiler {
 			System.exit(0);    //semantic error exit.
 		} else {
 			System.out.println("Semantic checks passed successfully!");
-		}  
+		}
+		
+		/* LIR code translation phase */
+		
+		if (printlir_flag) {
+			GlobalSymbolTable global = (GlobalSymbolTable)globalSymbolTable;		
+			TranslatePropagatingVisitor translator = optlir_flag ? new OptTranslatePropagatingVisitor(global) : new TranslatePropagatingVisitor(global);
+			if (optlir_flag) {
+				int progWeight = (Integer)root.accept(new RegCounterVisitor());
+			}
+			String tr = root.accept(translator, 0).getLIRCode();
+			String lirFileName = args[0].substring(0, args[0].length()-2)+"lir";
+			try {
+				BufferedWriter buff = new BufferedWriter(new FileWriter(lirFileName));
+				buff.write(tr);
+				buff.flush();
+				buff.close();
+			} catch (IOException e) {
+				System.out.println("Failed writing to file: " + lirFileName);
+				e.printStackTrace();
+			}
+			System.out.println("LIR translation");
+			System.out.println("===============");
+			System.out.println(tr);
+		}
         
 		
     } //end of main.

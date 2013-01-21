@@ -30,6 +30,10 @@ public class MethodSymbolTable extends BlockSymbolTable {
 		super.enclosingClass = (ClassSymbolTable)(parent);   //CST of enclosing class.
 	}
 
+	public int getVarDepthRec(String name) {
+		int vd = entries.containsKey(name) ? this.getDepth() : ((ClassSymbolTable) parentSymbolTable).getFieldDepthRec(name);
+		return vd;
+	}
 
 	@Override
 	public String toString() {

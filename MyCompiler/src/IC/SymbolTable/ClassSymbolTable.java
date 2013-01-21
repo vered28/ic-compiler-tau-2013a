@@ -128,6 +128,21 @@ public class ClassSymbolTable extends SymbolTable {
 		String str = "Class Symbol Table" + ": " + getID() + "\n" + super.toString();
 		return str;
 	}
+	
+	public int getFieldDepthRec(String name) {
+		int fd;
+		if (entries.containsKey(name)) {
+			fd = this.getDepth();
+		} else {
+			if (!hasNoParentScope()) {
+				fd = ((ClassSymbolTable) parentSymbolTable).getFieldDepthRec(name);
+			} else {
+				System.out.println("Error: cannot fetch depth for a non existing field - " + name);
+				fd = -2;
+			}
+		}
+		return fd;
+	}
 
 
 }

@@ -39,6 +39,6 @@ public abstract class Call extends Expression {
 		return arguments;
 	}
 	
-	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
+	
 
 }

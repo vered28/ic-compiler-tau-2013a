@@ -1,5 +1,6 @@
 package IC.AST;
 
+import IC.LIR.*;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -19,5 +20,4 @@ public abstract class Expression extends ASTNode {
 		super(line);
 	}
 	
-	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
 }

@@ -2,6 +2,7 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.LIR.*;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -19,6 +20,10 @@ public class VirtualCall extends Call {
 	
 	public Object accept(PropagatingVisitor visitor, SymbolTable context) {
 		return visitor.visit(this, context);
+	}
+	
+	public LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt) {
+		return visitor.visit(this, downInt);
 	}
 
 	/**

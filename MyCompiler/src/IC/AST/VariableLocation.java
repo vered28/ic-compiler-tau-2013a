@@ -1,5 +1,7 @@
 package IC.AST;
  
+import IC.LIR.*;
+import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.SymbolTable; 
 
 
@@ -23,6 +25,10 @@ public class VariableLocation extends Location {
 	
 	public Object accept(PropagatingVisitor visitor, SymbolTable context) {
 		return visitor.visit(this, context);
+	}
+	
+	public LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt) {
+		return visitor.visit(this, downInt);
 	}
 
 	/**
@@ -73,6 +79,10 @@ public class VariableLocation extends Location {
 	
 	public void setVarDeclarationScope(SymbolTable s) {
 		varDeclarationScope = s;
+	}
+	
+	public String getNameDepth() {
+		return name+((BlockSymbolTable)this.getEnclosingScope()).getVarDepthRec(name);
 	}
 
 }

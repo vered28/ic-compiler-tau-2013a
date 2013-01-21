@@ -36,6 +36,5 @@ public abstract class UnaryOp extends Expression {
 		return operand;
 	}
 	
-	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
 
 }

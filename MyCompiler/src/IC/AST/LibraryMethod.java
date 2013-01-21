@@ -3,6 +3,7 @@ package IC.AST;
 import java.util.ArrayList;
 import java.util.List;
 
+import IC.LIR.*;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -20,6 +21,10 @@ public class LibraryMethod extends Method {
 		return visitor.visit(this, context);
 	}
 
+	public LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt) {
+		return visitor.visit(this, downInt);
+	}
+	
 	/**
 	 * Constructs a new library method declaration node.
 	 * 

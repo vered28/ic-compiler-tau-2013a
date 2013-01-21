@@ -6,7 +6,7 @@ import IC.AST.*;
  * The visitor passes down objects of type <code>DownType</code>
  * and propagates up objects of type <code>UpType</code>.
  */
-public interface PropagatingVisitor<DownType,UpType> {
+public interface LIRPropagatingVisitor<DownType,UpType> {
 	
 	public UpType visit(Program program, DownType d);
 
