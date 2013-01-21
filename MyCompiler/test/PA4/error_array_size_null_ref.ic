@@ -1,0 +1,9 @@
+class A{
+	static void main (string[] args){
+		int[] a;
+		a = null;
+		
+		int x;
+		x = a.length;
+	}
+}

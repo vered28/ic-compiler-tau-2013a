@@ -1,0 +1,36 @@
+class C{
+	static void main(string[] args){
+		int i = C.doNothing(0, 23432, 4543, 546, 546, 5466546, 323543 , 436376 ,435234543 ,4325,3425432,3245,3445432,62654,7876,3324,65437,9845,123414,356547,898698);
+		Library.print("Before the block i was: ");
+		Library.printi(i);
+		Library.println("");
+		
+		{{{{{{{{{{{{{{{
+			int i = C.doNothing(3, 23432, 4543, 546, 546, 546546, 32423543 , 436376 ,435234543 ,4325,34532,3245,34532,62654,7876,3214,45437,9845,1314,35647,8998);
+			Library.print("Inside the block i is: ");
+			Library.printi(i);
+			Library.println("");
+			{
+				i = C.plus(i);
+			}
+			Library.print("End of the block i is: ");
+			Library.printi(i);
+			Library.println("");
+		}}}}}}}}}}}}}}}		
+
+		Library.print("Outside of the block i is: ");
+		Library.printi(i);
+		Library.println("");
+			
+
+
+	}
+
+	static int doNothing(int i,int i4,int i321432413,int i4321543,int i2314235,int i54211,int i546437,int i45234656,int i321435,int i23451,int i4557,int i43254,int i1234,int i4325435432,int i6546574652,int i657465765,int i65674657,int i7857,int i231234,int i2, int i43543){
+		return i;
+	}
+
+	static int plus(int i){
+		return i+1;
+	}
+}

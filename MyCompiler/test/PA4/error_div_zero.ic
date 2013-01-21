@@ -1,0 +1,8 @@
+class A{
+	static void main (string[] args){
+		int x = 10;
+		int y = (20-2*x);
+		
+		int z = x/y;
+	}
+}

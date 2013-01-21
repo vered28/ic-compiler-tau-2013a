@@ -1,0 +1,50 @@
+class A{
+	int x;
+}
+
+class B extends A{
+	void init(){
+		x = 1;
+	}
+	
+	int plus(){
+		x = x + 1;
+		int j = x;
+		return j;
+	}
+
+	int minus(){
+		x = x - 1;
+		int j = x;
+		return j;
+	}
+}
+
+class C{
+	static void main(string[] args){
+		B tmp = new B();
+		
+		
+		tmp.init();
+		
+		Library.print("Initial value: ");
+		Library.printi(tmp.x); 
+		Library.println("");
+
+		C.printer(tmp.plus(), tmp.x, tmp.minus());
+	}
+
+	static void printer(int x1, int x2, int x3){
+		Library.print("x1 was: ");
+		Library.printi(x1);
+		Library.println("");
+
+		Library.print("x2 was: ");
+		Library.printi(x2);
+		Library.println("");
+
+		Library.print("x3 was: ");
+		Library.printi(x3);
+		Library.println("");
+	}
+}

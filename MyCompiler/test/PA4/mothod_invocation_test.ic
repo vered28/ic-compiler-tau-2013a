@@ -1,0 +1,46 @@
+class Calculator{
+
+	static int plus(int x, int y){
+		return x+y;
+	}	
+	
+	static int minus(int x, int y){
+		return x-y;
+	}
+
+	static int mul(int x, int y){
+		return Calculator.mod(x * y);
+	}
+
+	static int mod(int x){
+		return x % 500;
+	}
+
+	static int mix(int x, int y){
+		int i = 0;
+		while (i<200){
+			x = Calculator.minus(Calculator.mul(y,x),Calculator.plus(x,y));
+			y = Calculator.plus(Calculator.mul(x,x),Calculator.minus(x,y));
+			i = i + 1;
+		}
+
+		i = Calculator.minus(Calculator.mul(x,y - 123), Calculator.mul(2 * x,y));
+		return i;
+	}
+}
+
+class A{
+	static void main(string[] args){
+		int i=0;
+		int val=1;		
+
+		while (i<40){
+			val = Calculator.mix(val, Calculator.minus(val, 3));	
+			Library.print("Current value: ");
+			Library.printi(val); 
+			Library.println("");
+			i = i + 1;	
+		}		
+
+	}
+}
