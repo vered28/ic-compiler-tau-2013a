@@ -3,7 +3,7 @@ package IC.LIR;
 import IC.BinaryOps;
 import IC.AST.*;
 import IC.SymbolTable.*;
-import IC.Visitors.DefTypeSemanticChecker;
+import IC.SemanticAnalysis.SemanticChecks;
 import IC.LIR.LIRFlagEnum;
 import java.util.*;
 
@@ -164,7 +164,7 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 		boolean isMain = method.getName().equals("main") &&
 						 method.getType().getName().equals("void") &&
 						 method.getFormals().size() == 1 &&
-						 method.getFormals().get(0).getType().getFullName().equals("string[]");
+						 method.getFormals().get(0).getType().toString().equals("string[]");
 		methodVisitHelper(method, d, isMain);
 		return new LIRUpType("", LIRFlagEnum.EXPLICIT,"");
 	}
@@ -182,7 +182,7 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 		
 		// create method label
 		String methodLabel = "_";
-		methodLabel += isMain ? "ic" : ((ClassSymbolTable) method.getEnclosingScope()).getMySymbol().getName();
+		methodLabel += isMain ? "ic" : ((ClassSymbolTable) method.getEnclosingScope()).getMyClassSymbol().getID();
 		methodLabel += "_"+method.getName();
 		
 		methodLIRCode += methodLabel+":\n";
@@ -306,7 +306,7 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 			
 			// get the ClassLayout for the location
 			IC.TypeTable.Type locationClassType = 
-				(IC.TypeTable.Type)location.getLocation().accept(new IC.Visitors.DefTypeSemanticChecker(global));
+				(IC.TypeTable.Type)location.getLocation().accept(new IC.SemanticAnalysis.SemanticChecks(global));
 			ClassLayout locationClassLayout = classLayouts.get(locationClassType.getName());
 			
 			// get the field offset for the variable
@@ -331,7 +331,7 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 		}else{
 			// check if the variable is a field
 			if (((BlockSymbolTable)location.getEnclosingScope()).isVarField(location.getName())){
-				String thisClassName = ((BlockSymbolTable)location.getEnclosingScope()).getEnclosingClassSymbolTable().getMySymbol().getName();
+				String thisClassName = ((BlockSymbolTable)location.getEnclosingScope()).getEnclosingCST().getMyClassSymbol().getID();
 				
 				ClassLayout locationClassLayout = classLayouts.get(thisClassName);
 				
@@ -710,7 +710,7 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 		// call statement
 		tr += "VirtualCall R"+d+".";
 		String className = !call.isExternal() ? currClassName :
-			((IC.TypeTable.ClassType) call.getLocation().accept(new DefTypeSemanticChecker(global))).getName();
+			((IC.TypeTable.ClassType) call.getLocation().accept(new SemanticChecks(global))).getName();
 		ClassLayout thisClassLayout = classLayouts.get(className);
 		Method thisMethod = thisClassLayout.getMethodFromName(call.getName());
 		int offset = thisClassLayout.getMethodOffset(thisMethod);
@@ -732,7 +732,7 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 	 * - translate this reference: get dispatch vector
 	 * - return translation
 	 */
-	public LIRUpType visit(This thisExpression, Integer d){//TODO
+	public LIRUpType visit(This thisExpression, Integer d){
 		String tr = "Move this,R"+d+"\n";
 		return new LIRUpType(tr, LIRFlagEnum.REGISTER,"R"+d);
 	}
@@ -868,8 +868,8 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 		switch (binaryOp.getOperator()){
 		case PLUS:
 			// check if operation is on strings or on integers
-			IC.TypeTable.Type operandsType = (IC.TypeTable.Type) binaryOp.getFirstOperand().accept(new DefTypeSemanticChecker(global));
-			if (operandsType.subtypeOf(IC.TypeTable.TypeTable.getUniquePrimitiveTypes().get("int"))){
+			IC.TypeTable.Type operandsType = (IC.TypeTable.Type) binaryOp.getFirstOperand().accept(new SemanticChecks(global));
+			if (operandsType.subtypeof(IC.TypeTable.TypeTable.getUniquePrimitiveTypes().get("int"))){
 				tr += "Add "+operand2.getTargetRegister()+","+operand1.getTargetRegister()+"\n";
 				if (!operand1.getTargetRegister().equals("R"+d)){
 					// put result in Rd anyway

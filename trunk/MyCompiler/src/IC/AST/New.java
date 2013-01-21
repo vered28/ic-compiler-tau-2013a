@@ -19,6 +19,5 @@ public abstract class New extends Expression {
 		super(line);
 	}
 	
-	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
 
 }

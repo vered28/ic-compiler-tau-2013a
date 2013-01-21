@@ -40,7 +40,6 @@ public abstract class Method extends ASTNode {
 		this.statements = statements;
 	}
 	
-    public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
 
 	public Type getType() {
 		return type;

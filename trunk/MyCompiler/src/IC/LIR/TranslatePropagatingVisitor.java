@@ -3,14 +3,14 @@ package IC.LIR;
 import IC.BinaryOps;
 import IC.AST.*;
 import IC.SymbolTable.*;
-import IC.Visitors.DefTypeSemanticChecker;
+import IC.SemanticAnalysis.SemanticChecks;
 import IC.LIR.LIRFlagEnum;
 import java.util.*;
 
 /**
  * Translating visitor to LIR
  */
-public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, LIRUpType>{
+public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Integer, LIRUpType>{
 
 	protected GlobalSymbolTable global;
 	
@@ -219,7 +219,7 @@ public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, 
 		boolean isMain = method.getName().equals("main") &&
 						 method.getType().getName().equals("void") &&
 						 method.getFormals().size() == 1 &&
-						 method.getFormals().get(0).getType().getFullName().equals("string[]");
+						 method.getFormals().get(0).getType().toString().equals("string[]");
 		methodVisitHelper(method, d, isMain);
 		return new LIRUpType("", LIRFlagEnum.EXPLICIT,"");
 	}
@@ -237,7 +237,7 @@ public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, 
 		
 		// create method label
 		String methodLabel = "_";
-		methodLabel += isMain ? "ic" : ((ClassSymbolTable) method.getEnclosingScope()).getMySymbol().getName();
+		methodLabel += isMain ? "ic" : ((ClassSymbolTable) method.getEnclosingScope()).getMyClassSymbol().getID();
 		methodLabel += "_"+method.getName();
 		
 		methodLIRCode += methodLabel+":\n";
@@ -352,7 +352,7 @@ public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, 
 			
 			// get the ClassLayout for the location
 			IC.TypeTable.Type locationClassType = 
-				(IC.TypeTable.Type)location.getLocation().accept(new IC.Visitors.DefTypeSemanticChecker(global));
+				(IC.TypeTable.Type)location.getLocation().accept(new IC.SemanticAnalysis.SemanticChecks(global));
 			ClassLayout locationClassLayout = classLayouts.get(locationClassType.getName());
 			
 			// get the field offset for the variable
@@ -373,7 +373,7 @@ public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, 
 		}else{
 			// check if the variable is a field
 			if (((BlockSymbolTable)location.getEnclosingScope()).isVarField(location.getName())){
-				String thisClassName = ((BlockSymbolTable)location.getEnclosingScope()).getEnclosingClassSymbolTable().getMySymbol().getName();
+				String thisClassName = ((BlockSymbolTable)location.getEnclosingScope()).getEnclosingCST().getMyClassSymbol().getID();
 				
 				ClassLayout locationClassLayout = classLayouts.get(thisClassName);
 				
@@ -613,7 +613,7 @@ public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, 
 		Method thisMethod = thisClassLayout.getMethodFromName(call.getName());
 		tr += "# call statement:\n";
 		// construct method label
-		String methodName = "_"+((ClassSymbolTable) thisMethod.getEnclosingScope()).getMySymbol().getName()+
+		String methodName = "_"+((ClassSymbolTable) thisMethod.getEnclosingScope()).getMyClassSymbol().getID()+
 							"_"+call.getName();
 		tr += "StaticCall "+methodName+"(";
 		// insert <formal>=<argument register>
@@ -684,7 +684,7 @@ public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, 
 		// call statement
 		tr += "VirtualCall R"+d+".";
 		String className = !call.isExternal() ? currClassName :
-			((IC.TypeTable.ClassType) call.getLocation().accept(new DefTypeSemanticChecker(global))).getName();
+			((IC.TypeTable.ClassType) call.getLocation().accept(new SemanticChecks(global))).getName();
 		ClassLayout thisClassLayout = classLayouts.get(className);
 		Method thisMethod = thisClassLayout.getMethodFromName(call.getName());
 		int offset = thisClassLayout.getMethodOffset(thisMethod);
@@ -796,8 +796,8 @@ public class TranslatePropagatingVisitor implements PropagatingVisitor<Integer, 
 		switch (binaryOp.getOperator()){
 		case PLUS:
 			// check if operation is on strings or on integers
-			IC.TypeTable.Type operandsType = (IC.TypeTable.Type) binaryOp.getFirstOperand().accept(new DefTypeSemanticChecker(global));
-			if (operandsType.subtypeOf(IC.TypeTable.TypeTable.getUniquePrimitiveTypes().get("int"))){
+			IC.TypeTable.Type operandsType = (IC.TypeTable.Type) binaryOp.getFirstOperand().accept(new SemanticChecks(global));
+			if (operandsType.subtypeof(IC.TypeTable.TypeTable.getUniquePrimitiveTypes().get("int"))){
 				tr += "Add R"+(d+1)+",R"+d+"\n";
 			} else { // strings
 				tr += "Library __stringCat(R"+d+",R"+(d+1)+"),R"+d+"\n";

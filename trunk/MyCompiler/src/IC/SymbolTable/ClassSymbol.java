@@ -13,6 +13,8 @@ import IC.TypeTable.TypeTable;
 public class ClassSymbol extends Symbol {
 
 	private ClassSymbolTable cst;
+	
+	private ICClass icClass;
 
 	public ClassSymbol(ICClass c) throws SemanticError {
 		
@@ -22,6 +24,7 @@ public class ClassSymbol extends Symbol {
 		
 		c.setEnclosingScope(cst.getParent());
 		
+		this.icClass = c;
 	}
 
 	/** 
@@ -52,6 +55,10 @@ public class ClassSymbol extends Symbol {
 
 		this.cst = new ClassSymbolTable(c, super.getID(), parent, this);
 		parent.addChild(this.cst);
+	}
+	
+	public ICClass getIcClass() {
+		return icClass;
 	}
 
 	public ClassSymbolTable getClassSymbolTable() {

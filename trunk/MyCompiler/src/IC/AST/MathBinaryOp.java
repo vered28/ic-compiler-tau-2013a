@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.BinaryOps;
+import IC.LIR.*;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -16,6 +17,10 @@ public class MathBinaryOp extends BinaryOp {
 	
 	public Object accept(PropagatingVisitor visitor, SymbolTable context) {
 		return visitor.visit(this, context);
+	}
+	
+	public LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt) {
+		return visitor.visit(this, downInt);
 	}
 
 	/**

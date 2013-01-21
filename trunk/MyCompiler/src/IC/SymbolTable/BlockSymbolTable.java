@@ -39,6 +39,11 @@ public class BlockSymbolTable extends SymbolTable {
 		VarSymbol v = new VarSymbol(lv);
 		super.insert(v);
 	}
+	
+	public int getVarDepthRec(String name) {
+		int vd = entries.containsKey(name) ? this.getDepth() : ((BlockSymbolTable) parentSymbolTable).getVarDepthRec(name);
+		return vd;
+	}
 
 	public Symbol lookupVariable(String name) throws SemanticError {
 		
@@ -49,6 +54,11 @@ public class BlockSymbolTable extends SymbolTable {
 		}
 		
 		return vs;
+	}
+	
+	public boolean isVarField (String name){
+		if (entries.containsKey(name)) return false;
+		else return ((BlockSymbolTable)parentSymbolTable).isVarField(name);
 	}
 
 	@Override

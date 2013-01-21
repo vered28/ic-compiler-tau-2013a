@@ -1,5 +1,5 @@
 package IC.AST;
-
+import IC.LIR.*;
 import IC.SymbolTable.*;
 
 /**
@@ -36,7 +36,10 @@ public abstract class ASTNode {
 	 * @return A value propagated by the visitor.
 	 */
 	public abstract Object accept(Visitor visitor);
+	
+	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
 
+	public abstract LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt);
 	/**
 	 * Constructs an AST node corresponding to a line number in the original
 	 * code. Used by subclasses.

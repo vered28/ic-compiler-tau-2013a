@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.BinaryOps;
+import IC.LIR.*;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -18,6 +19,10 @@ public class LogicalBinaryOp extends BinaryOp {
 		return visitor.visit(this, context);
 	}
 
+	public LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt) {
+		return visitor.visit(this, downInt);
+	}
+	
 	/**
 	 * Constructs a new logical binary operation node.
 	 * 

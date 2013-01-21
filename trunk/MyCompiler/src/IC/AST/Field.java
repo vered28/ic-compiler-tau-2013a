@@ -1,5 +1,8 @@
 package IC.AST;
 
+import IC.LIR.*;
+import IC.SymbolTable.BlockSymbolTable;
+import IC.SymbolTable.ClassSymbolTable;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -21,6 +24,10 @@ public class Field extends ASTNode {
 		return visitor.visit(this, context);
 	}
 
+	public LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt) {
+		return visitor.visit(this, downInt);
+	}
+	
 	/**
 	 * Constructs a new field node.
 	 * 
@@ -41,6 +48,10 @@ public class Field extends ASTNode {
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getNameDepth() {
+		return name+((ClassSymbolTable)this.getEnclosingScope()).getFieldDepthRec(name);
 	}
 
 }

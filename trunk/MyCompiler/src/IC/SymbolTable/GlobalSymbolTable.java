@@ -44,6 +44,10 @@ public class GlobalSymbolTable extends SymbolTable {
 		
 		return cs;
 	}
+	
+	public ClassSymbol getClass(String name){
+		return (ClassSymbol) entries.get(name);
+	}
 
 	
 	/** 

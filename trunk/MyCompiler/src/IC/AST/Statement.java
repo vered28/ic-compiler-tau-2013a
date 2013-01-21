@@ -18,7 +18,5 @@ public abstract class Statement extends ASTNode {
 	protected Statement(int line) {
 		super(line);
 	}
-	
-	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
 
 }

@@ -53,6 +53,6 @@ public abstract class Type extends ASTNode {
         return id;
 	}
 	
-	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
+	
 	
 }

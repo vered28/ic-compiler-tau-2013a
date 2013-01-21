@@ -848,7 +848,7 @@ public class SemanticChecks implements Visitor {
 		if ((binaryOp.getOperator() == IC.BinaryOps.LAND) || (binaryOp.getOperator() == IC.BinaryOps.LOR)) {
 			try {
 				if (!op1Type.subtypeof(IC.TypeTable.TypeTable.getType("boolean"))) {
-					System.out.println(new SemanticError("Cannot perform logical operation on non-boolean values",
+					System.out.println(new SemanticError("Cannot perform logical operation on non-boolean types",
 																binaryOp.getLine(), op1Type.getName()));
 					return null;
 				}
@@ -862,7 +862,7 @@ public class SemanticChecks implements Visitor {
 		if ((binaryOp.getOperator() != IC.BinaryOps.EQUAL) && (binaryOp.getOperator() != IC.BinaryOps.NEQUAL)) {
 			try {
 				if (!op1Type.subtypeof(IC.TypeTable.TypeTable.getType("int"))) {
-					System.out.println(new SemanticError("Comparing non-int values", 
+					System.out.println(new SemanticError("Comparing non-int types", 
 												binaryOp.getLine(), op1Type.getName()));
 					return null;
 				}

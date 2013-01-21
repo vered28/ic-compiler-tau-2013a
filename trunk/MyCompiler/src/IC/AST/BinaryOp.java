@@ -46,5 +46,4 @@ public abstract class BinaryOp extends Expression {
 		return operand2;
 	}
 
-	public abstract Object accept(PropagatingVisitor visitor, SymbolTable context);
 }

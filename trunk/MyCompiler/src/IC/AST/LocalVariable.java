@@ -1,5 +1,6 @@
 package IC.AST;
 
+import IC.LIR.*;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -23,6 +24,10 @@ public class LocalVariable extends Statement {
 		return visitor.visit(this, context);
 	}
 
+	public LIRUpType accept(LIRPropagatingVisitor<Integer,LIRUpType> visitor, Integer downInt) {
+		return visitor.visit(this, downInt);
+	}
+	
 	/**
 	 * Constructs a new local variable declaration statement node.
 	 * 
@@ -67,6 +72,10 @@ public class LocalVariable extends Statement {
 
 	public Expression getInitValue() {
 		return initValue;
+	}
+	
+	public String getNameDepth() {
+		return name+this.getEnclosingScope().getDepth();
 	}
 
 }
