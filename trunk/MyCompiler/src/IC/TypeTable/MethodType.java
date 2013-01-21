@@ -36,19 +36,19 @@ public class MethodType extends Type {
 	 */
 	public boolean equals(MethodType mt) {
 
-		// different ret. type.
-		if (getReturnType() != mt.getReturnType()) {
+		//different ret. type.
+		if (mt.getReturnType().subtypeof(this.getReturnType()) == false) {
 			return false;
 		}
 
-		// different # of params.
+		//different # of params.
 		if (params.size() != mt.getParamsTypes().size()) {
 			return false;
 		}
 
-		// checking params. types respectively.
+		//checking params. types respectively.
 		for (int i = 0; i < this.params.size(); i++) {
-			if (params.get(i) != mt.getParamsTypes().get(i)) {
+			if (mt.getParamsTypes().get(i).subtypeof(params.get(i)) == false) {
 				return false;
 			}
 		}
@@ -65,18 +65,18 @@ public class MethodType extends Type {
 	public String toString() {
 		String str = "{";
 
-		// concat. params.
+		//concat. params.
 
 		if (this.params.size() > 0) { // we have at least one param.
 			str += this.params.get(0).getName(); // first param.
 		}
 
-		// other params.
+		//other params.
 		for (int i = 1; i < this.params.size(); i++) {
 			str += ", " + this.params.get(i).getName();
 		}
 
-		// return type.
+		//return type.
 		str += " -> " + this.returnType.getName() + "}";
 
 		return str;
