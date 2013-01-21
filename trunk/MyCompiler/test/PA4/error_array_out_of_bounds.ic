@@ -1,0 +1,7 @@
+class A{
+	static void main (string[] args){
+		int[] a = new int[3];
+		
+		a[5] = 8;
+	}
+}

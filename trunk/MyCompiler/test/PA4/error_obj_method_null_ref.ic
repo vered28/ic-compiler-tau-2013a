@@ -1,0 +1,15 @@
+class A{
+	int foo(){
+		return 3;
+	}
+	
+	
+	static void main (string[] args){
+		A a;
+		a = null;
+		
+		int x;
+		
+		x = a.foo();
+	}
+}

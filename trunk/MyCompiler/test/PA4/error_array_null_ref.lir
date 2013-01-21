@@ -1,0 +1,64 @@
+# this is the optimized lir translation
+# string literals
+str_null_ref: "Runtime Error: Null pointer dereference!"
+str_array_access: "Runtime Error: Array index out of bounds!"
+str_size: "Runtime Error: Array allocation with negative array size!"
+str_zero: "Runtime Error: Division by zero!"
+
+# class dispatch tables
+_DV_A: []
+# fields offsets:
+
+
+# Runtime checks:
+__checkNullRef:
+Move a,Rc1
+Compare 0,Rc1
+JumpTrue __checkNullRef_err
+Return 9999
+__checkNullRef_err:
+Library __println(str_null_ref),Rdummy
+Jump _error_exit
+
+__checkArrayAccess:
+Move a,Rc1
+Move i,Rc2
+ArrayLength Rc1,Rc1
+Compare Rc1,Rc2
+JumpGE __checkArrayAccess_err
+Compare 0,Rc2
+JumpL __checkArrayAccess_err
+Return 9999
+__checkArrayAccess_err:
+Library __println(str_array_access),Rdummy
+Jump _error_exit
+
+__checkSize:
+Move n,Rc1
+Compare 0,Rc1
+JumpL __checkSize_err
+Return 9999
+__checkSize_err:
+Library __println(str_size),Rdummy
+Jump _error_exit
+
+__checkZero:
+Move b,Rc1
+Compare 0,Rc1
+JumpTrue __checkZero_err
+Return 9999
+__checkZero_err:
+Library __println(str_zero),Rdummy
+Jump _error_exit
+
+# methods
+# main method
+_ic_main:
+Move 0,a1
+Move a1,R1
+StaticCall __checkNullRef(a=R1),Rdummy
+Move 5,R2
+StaticCall __checkArrayAccess(a=R1,i=R2),Rdummy
+MoveArray 8,R1[R2]
+
+_error_exit:

@@ -1,0 +1,66 @@
+class A {
+	int x;
+	int y;
+	boolean z;
+	
+	void init(){
+		x = 5;
+		y = 10;		
+	}
+	
+  	boolean foo (int p1, int p2, int p3){
+  		return false;
+  	}
+  	
+  	static int vFoo (int parOne, A parTwo){
+  		return 1;
+  	}
+}
+
+class B extends A {
+	int t1;
+	
+	boolean foo (int p1, int p2, int p3){
+  		return false;
+  	}
+		
+	boolean foo2 (int p1, int p2, int p3){
+  		return false;
+  	}
+}
+
+class C extends B {
+  int t2;
+  boolean foo (int p1, int p2, int p3){
+  		return false;
+  	}
+
+  static void main(string[] args) {
+  	A a = new A();
+  	a.init();
+  	
+  	D d = new D();
+  	
+  	Library.println("Expected output is true.");
+  	Library.print("Result: ");
+  	
+  	if (d.foo(a.x,a.y,a.y+5)){
+  		Library.println("true");
+  	} else {
+  		Library.println("false");
+  	}
+	
+  }
+}
+
+class D extends C {
+	int t3;
+	
+	boolean foo (int p1, int p2, int p3){
+  		if ((p1 < p2) && (p2 < p3)) {
+  			return (true && (4 > (3 % (10 / 2)))); // Always true
+  		} else {
+  			return false;
+  		}
+  	}
+}
