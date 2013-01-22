@@ -1,0 +1,161 @@
+# string literals
+str_null_ref: "Runtime Error: Null pointer dereference!"
+str_array_access: "Runtime Error: Array index out of bounds!"
+str_size: "Runtime Error: Array allocation with negative array size!"
+str_zero: "Runtime Error: Division by zero!"
+str3: ""x2 was: ""
+str1: """"
+str4: ""x3 was: ""
+str2: ""x1 was: ""
+str0: ""Initial value: ""
+
+# class dispatch tables
+_DV_A: []
+# fields offsets:
+# x: 1
+
+_DV_B: [_B_init,_B_plus,_B_minus]
+# fields offsets:
+
+_DV_C: []
+# fields offsets:
+
+
+# Runtime checks:
+__checkNullRef:
+Move a,Rc1
+Compare 0,Rc1
+JumpTrue __checkNullRef_err
+Return 9999
+__checkNullRef_err:
+Library __println(str_null_ref),Rdummy
+Jump _error_exit
+
+__checkArrayAccess:
+Move a,Rc1
+Move i,Rc2
+ArrayLength Rc1,Rc1
+Compare Rc1,Rc2
+JumpGE __checkArrayAccess_err
+Compare 0,Rc2
+JumpL __checkArrayAccess_err
+Return 9999
+__checkArrayAccess_err:
+Library __println(str_array_access),Rdummy
+Jump _error_exit
+
+__checkSize:
+Move n,Rc1
+Compare 0,Rc1
+JumpL __checkSize_err
+Return 9999
+__checkSize_err:
+Library __println(str_size),Rdummy
+Jump _error_exit
+
+__checkZero:
+Move b,Rc1
+Compare 0,Rc1
+JumpTrue __checkZero_err
+Return 9999
+__checkZero_err:
+Library __println(str_zero),Rdummy
+Jump _error_exit
+
+# methods
+_B_init:
+Move 1,R0
+Move R0,x1
+Return 9999
+
+_B_plus:
+Move x1,R0
+Move 1,R1
+Add R1,R0
+Move R0,R0
+Move R0,x1
+Move x1,R0
+Move R0,j3
+Return j3
+
+_B_minus:
+Move x1,R0
+Move 1,R1
+Sub R1,R0
+Move R0,R0
+Move R0,x1
+Move x1,R0
+Move R0,j3
+Return j3
+
+_C_printer:
+# argument #0:
+Move str2,R0
+Library __print(R0),R0
+# argument #0:
+Move x12,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+# argument #0:
+Move str3,R0
+Library __print(R0),R0
+# argument #0:
+Move x22,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+# argument #0:
+Move str4,R0
+Library __print(R0),R0
+# argument #0:
+Move x32,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+Return 9999
+
+# main method
+_ic_main:
+Library __allocateObject(8),R0
+MoveField _DV_B,R0.0
+Move R0,R0
+Move R0,tmp2
+# virtual call location:
+Move tmp2,R0
+StaticCall __checkNullRef(a=R0),Rdummy
+VirtualCall R0.0(),R0
+# argument #0:
+Move str0,R0
+Library __print(R0),R0
+# argument #0:
+Move tmp2,R0
+StaticCall __checkNullRef(a=R0),Rdummy
+MoveField R0.1,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+# argument #0:
+# virtual call location:
+Move tmp2,R0
+StaticCall __checkNullRef(a=R0),Rdummy
+VirtualCall R0.1(),R0
+Move R0,R0
+# argument #1:
+Move tmp2,R1
+StaticCall __checkNullRef(a=R1),Rdummy
+MoveField R1.1,R1
+# argument #2:
+# virtual call location:
+Move tmp2,R2
+StaticCall __checkNullRef(a=R2),Rdummy
+VirtualCall R2.2(),R2
+Move R2,R2
+# call statement:
+StaticCall _C_printer(x12=R0,x22=R1,x32=R2),R0
+
+_error_exit:

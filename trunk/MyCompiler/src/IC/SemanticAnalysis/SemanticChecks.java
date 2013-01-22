@@ -582,7 +582,7 @@ public class SemanticChecks implements Visitor {
 			return null;
 		}
 
-		if (insideStatic && !(ms.isStaticMethod())) {
+		if (!call.isExternal() && insideStatic && !(ms.isStaticMethod())) {
 			System.out.println(new SemanticError("Calling virtual method from static scope", 
 										call.getLine(), call.getName()));
 			return null;
@@ -802,7 +802,7 @@ public class SemanticChecks implements Visitor {
 		
 		IC.TypeTable.Type op1Type = (IC.TypeTable.Type)binaryOp.getFirstOperand().accept(this);
 		IC.TypeTable.Type op2Type = (IC.TypeTable.Type)binaryOp.getSecondOperand().accept(this);
-
+		
 		if ((op1Type == null) || (op2Type == null)) {
 			return null;
 		}
@@ -859,11 +859,13 @@ public class SemanticChecks implements Visitor {
 		}
 		
 		//operator is "<=", ">=", "<" or ">".
-		if ((binaryOp.getOperator() != IC.BinaryOps.EQUAL) && (binaryOp.getOperator() != IC.BinaryOps.NEQUAL)) {
+		if ( (binaryOp.getOperator() == IC.BinaryOps.GT) || (binaryOp.getOperator() == IC.BinaryOps.GTE) ||
+				(binaryOp.getOperator() == IC.BinaryOps.LT) || (binaryOp.getOperator() == IC.BinaryOps.LTE) ) {
 			try {
 				if (!op1Type.subtypeof(IC.TypeTable.TypeTable.getType("int"))) {
 					System.out.println(new SemanticError("Comparing non-int types", 
 												binaryOp.getLine(), op1Type.getName()));
+					
 					return null;
 				}
 				

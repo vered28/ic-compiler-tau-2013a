@@ -53,7 +53,11 @@ Jump _error_exit
 # methods
 # main method
 _ic_main:
-Move 0,R0
+Move 3,R0
+Mul 4,R0
+StaticCall __checkSize(n=R0),Rdummy
+Library __allocateArray(R0),R0
+Move R0,R0
 Move R0,a2
 Move 8,R0
 Move a2,R1

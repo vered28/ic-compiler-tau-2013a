@@ -55,11 +55,10 @@ Jump _error_exit
 _ic_main:
 Move 0,R0
 Move R0,a2
-Move 8,R0
-Move a2,R1
-StaticCall __checkNullRef(a=R1),Rdummy
-Move 5,R2
-StaticCall __checkArrayAccess(a=R1,i=R2),Rdummy
-MoveArray R0,R1[R2]
+Move a2,R0
+StaticCall __checkNullRef(a=R0),Rdummy
+ArrayLength R0,R0
+Move R0,R0
+Move R0,x2
 
 _error_exit:

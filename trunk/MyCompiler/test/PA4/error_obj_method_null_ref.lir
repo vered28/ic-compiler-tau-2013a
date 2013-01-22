@@ -5,7 +5,7 @@ str_size: "Runtime Error: Array allocation with negative array size!"
 str_zero: "Runtime Error: Division by zero!"
 
 # class dispatch tables
-_DV_A: []
+_DV_A: [_A_foo]
 # fields offsets:
 
 
@@ -51,15 +51,18 @@ Library __println(str_zero),Rdummy
 Jump _error_exit
 
 # methods
+_A_foo:
+Return 3
+
 # main method
 _ic_main:
 Move 0,R0
 Move R0,a2
-Move 8,R0
-Move a2,R1
-StaticCall __checkNullRef(a=R1),Rdummy
-Move 5,R2
-StaticCall __checkArrayAccess(a=R1,i=R2),Rdummy
-MoveArray R0,R1[R2]
+# virtual call location:
+Move a2,R0
+StaticCall __checkNullRef(a=R0),Rdummy
+VirtualCall R0.0(),R0
+Move R0,R0
+Move R0,x2
 
 _error_exit:

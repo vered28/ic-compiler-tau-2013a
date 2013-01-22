@@ -7,6 +7,7 @@ str_zero: "Runtime Error: Division by zero!"
 # class dispatch tables
 _DV_A: []
 # fields offsets:
+# x: 1
 
 
 # Runtime checks:
@@ -58,8 +59,6 @@ Move R0,a2
 Move 8,R0
 Move a2,R1
 StaticCall __checkNullRef(a=R1),Rdummy
-Move 5,R2
-StaticCall __checkArrayAccess(a=R1,i=R2),Rdummy
-MoveArray R0,R1[R2]
+MoveField R0,R1.1
 
 _error_exit:
