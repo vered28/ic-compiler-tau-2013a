@@ -1,3 +1,4 @@
+# this is the optimized lir translation
 # string literals
 str_null_ref: "Runtime Error: Null pointer dereference!"
 str_array_access: "Runtime Error: Array index out of bounds!"
@@ -55,11 +56,9 @@ Jump _error_exit
 _ic_main:
 Move 4,R0
 Neg R0
-Move R0,R0
 Mul 4,R0
 StaticCall __checkSize(n=R0),Rdummy
 Library __allocateArray(R0),R0
-Move R0,R0
 Move R0,a2
 
 _error_exit:

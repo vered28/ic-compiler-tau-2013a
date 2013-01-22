@@ -1,0 +1,226 @@
+# string literals
+str_null_ref: "Runtime Error: Null pointer dereference!"
+str_array_access: "Runtime Error: Array index out of bounds!"
+str_size: "Runtime Error: Array allocation with negative array size!"
+str_zero: "Runtime Error: Division by zero!"
+str2: ""true""
+str1: ""Result: ""
+str3: ""false""
+str0: ""Expected output is true.""
+
+# class dispatch tables
+_DV_A: [_A_init,_A_foo]
+# fields offsets:
+# x: 1
+# y: 2
+# z: 3
+
+_DV_B: [_A_init,_B_foo,_B_foo2]
+# fields offsets:
+# x: 1
+# y: 2
+# t1: 3
+
+_DV_C: [_A_init,_C_foo,_B_foo2]
+# fields offsets:
+# x: 1
+# y: 2
+# t1: 3
+# t2: 4
+
+_DV_D: [_A_init,_D_foo,_B_foo2]
+# fields offsets:
+# x: 1
+# y: 2
+# t1: 3
+# t2: 4
+# t3: 5
+
+
+# Runtime checks:
+__checkNullRef:
+Move a,Rc1
+Compare 0,Rc1
+JumpTrue __checkNullRef_err
+Return 9999
+__checkNullRef_err:
+Library __println(str_null_ref),Rdummy
+Jump _error_exit
+
+__checkArrayAccess:
+Move a,Rc1
+Move i,Rc2
+ArrayLength Rc1,Rc1
+Compare Rc1,Rc2
+JumpGE __checkArrayAccess_err
+Compare 0,Rc2
+JumpL __checkArrayAccess_err
+Return 9999
+__checkArrayAccess_err:
+Library __println(str_array_access),Rdummy
+Jump _error_exit
+
+__checkSize:
+Move n,Rc1
+Compare 0,Rc1
+JumpL __checkSize_err
+Return 9999
+__checkSize_err:
+Library __println(str_size),Rdummy
+Jump _error_exit
+
+__checkZero:
+Move b,Rc1
+Compare 0,Rc1
+JumpTrue __checkZero_err
+Return 9999
+__checkZero_err:
+Library __println(str_zero),Rdummy
+Jump _error_exit
+
+# methods
+_A_init:
+Move 5,R0
+Move R0,x1
+Move 10,R0
+Move R0,y1
+Return 9999
+
+_A_foo:
+Return 0
+
+_A_vFoo:
+Return 1
+
+_B_foo:
+Return 0
+
+_B_foo2:
+Return 0
+
+_C_foo:
+Return 0
+
+_D_foo:
+Move p15,R0
+Move p25,R1
+Compare R1,R0
+JumpL _true_label3
+Move 0,R0
+Jump _end_label3
+_true_label3:
+Move 1,R0
+_end_label3:
+Move R0,R0
+Move p25,R1
+Move p35,R2
+Compare R2,R1
+JumpL _true_label4
+Move 0,R1
+Jump _end_label4
+_true_label4:
+Move 1,R1
+_end_label4:
+Move R1,R1
+Compare 0,R0
+JumpTrue _false_label2
+Compare 0,R1
+JumpTrue _false_label2
+Jump _true_label2
+_false_label2:
+Move 0,R0
+Jump _end_label2
+_true_label2:
+Move 1,R0
+_end_label2:
+Move R0,R0
+Compare 0,R0
+JumpTrue _false_label1
+Move 1,R0
+Move 4,R1
+Move 3,R2
+Move 10,R3
+Move 2,R4
+StaticCall __checkZero(b=R4),Rdummy
+Div R4,R3
+Move R3,R3
+Mod R3,R2
+Move R2,R2
+Compare R2,R1
+JumpG _true_label6
+Move 0,R1
+Jump _end_label6
+_true_label6:
+Move 1,R1
+_end_label6:
+Move R1,R1
+Compare 0,R0
+JumpTrue _false_label5
+Compare 0,R1
+JumpTrue _false_label5
+Jump _true_label5
+_false_label5:
+Move 0,R0
+Jump _end_label5
+_true_label5:
+Move 1,R0
+_end_label5:
+Return R0
+Jump _end_label1
+_false_label1:
+Return 0
+_end_label1:
+
+# main method
+_ic_main:
+Library __allocateObject(16),R0
+MoveField _DV_A,R0.0
+Move R0,R0
+Move R0,a4
+# virtual call location:
+Move a4,R0
+StaticCall __checkNullRef(a=R0),Rdummy
+VirtualCall R0.0(),R0
+Library __allocateObject(28),R0
+MoveField _DV_D,R0.0
+Move R0,R0
+Move R0,d4
+# argument #0:
+Move str0,R0
+Library __println(R0),R0
+# argument #0:
+Move str1,R0
+Library __print(R0),R0
+# virtual call location:
+Move d4,R0
+StaticCall __checkNullRef(a=R0),Rdummy
+# argument #0:
+Move a4,R1
+StaticCall __checkNullRef(a=R1),Rdummy
+MoveField R1.1,R1
+# argument #1:
+Move a4,R2
+StaticCall __checkNullRef(a=R2),Rdummy
+MoveField R2.2,R2
+# argument #2:
+Move a4,R3
+StaticCall __checkNullRef(a=R3),Rdummy
+MoveField R3.2,R3
+Move 5,R4
+Add R4,R3
+Move R3,R3
+VirtualCall R0.1(p15=R1,p25=R2,p35=R3),R0
+Move R0,R0
+Compare 0,R0
+JumpTrue _false_label0
+# argument #0:
+Move str2,R0
+Library __println(R0),R0
+Jump _end_label0
+_false_label0:
+# argument #0:
+Move str3,R0
+Library __println(R0),R0
+_end_label0:
+
+_error_exit:

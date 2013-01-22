@@ -1,0 +1,202 @@
+# this is the optimized lir translation
+# string literals
+str_null_ref: "Runtime Error: Null pointer dereference!"
+str_array_access: "Runtime Error: Array index out of bounds!"
+str_size: "Runtime Error: Array allocation with negative array size!"
+str_zero: "Runtime Error: Division by zero!"
+str0: ""Before the block i was: ""
+str4: ""Outside of the block i is: ""
+str1: """"
+str3: ""End of the block i is: ""
+str2: ""Inside the block i is: ""
+
+# class dispatch tables
+_DV_C: []
+# fields offsets:
+
+
+# Runtime checks:
+__checkNullRef:
+Move a,Rc1
+Compare 0,Rc1
+JumpTrue __checkNullRef_err
+Return 9999
+__checkNullRef_err:
+Library __println(str_null_ref),Rdummy
+Jump _error_exit
+
+__checkArrayAccess:
+Move a,Rc1
+Move i,Rc2
+ArrayLength Rc1,Rc1
+Compare Rc1,Rc2
+JumpGE __checkArrayAccess_err
+Compare 0,Rc2
+JumpL __checkArrayAccess_err
+Return 9999
+__checkArrayAccess_err:
+Library __println(str_array_access),Rdummy
+Jump _error_exit
+
+__checkSize:
+Move n,Rc1
+Compare 0,Rc1
+JumpL __checkSize_err
+Return 9999
+__checkSize_err:
+Library __println(str_size),Rdummy
+Jump _error_exit
+
+__checkZero:
+Move b,Rc1
+Compare 0,Rc1
+JumpTrue __checkZero_err
+Return 9999
+__checkZero_err:
+Library __println(str_zero),Rdummy
+Jump _error_exit
+
+# methods
+_C_doNothing:
+Return i2
+
+_C_plus:
+Move i2,R0
+Add 1,R0
+Return R0
+
+# main method
+_ic_main:
+# argument #0:
+Move 0,R0
+# argument #1:
+Move 23432,R1
+# argument #2:
+Move 4543,R2
+# argument #3:
+Move 546,R3
+# argument #4:
+Move 546,R4
+# argument #5:
+Move 5466546,R5
+# argument #6:
+Move 323543,R6
+# argument #7:
+Move 436376,R7
+# argument #8:
+Move 435234543,R8
+# argument #9:
+Move 4325,R9
+# argument #10:
+Move 3425432,R10
+# argument #11:
+Move 3245,R11
+# argument #12:
+Move 3445432,R12
+# argument #13:
+Move 62654,R13
+# argument #14:
+Move 7876,R14
+# argument #15:
+Move 3324,R15
+# argument #16:
+Move 65437,R16
+# argument #17:
+Move 9845,R17
+# argument #18:
+Move 123414,R18
+# argument #19:
+Move 356547,R19
+# argument #20:
+Move 898698,R20
+# call statement:
+StaticCall _C_doNothing(i2=R0,i42=R1,i3214324132=R2,i43215432=R3,i23142352=R4,i542112=R5,i5464372=R6,i452346562=R7,i3214352=R8,i234512=R9,i45572=R10,i432542=R11,i12342=R12,i43254354322=R13,i65465746522=R14,i6574657652=R15,i656746572=R16,i78572=R17,i2312342=R18,i22=R19,i435432=R20),R0
+Move R0,i2
+# argument #0:
+Move str0,R0
+Library __print(R0),R0
+# argument #0:
+Move i2,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+# argument #0:
+Move 3,R0
+# argument #1:
+Move 23432,R1
+# argument #2:
+Move 4543,R2
+# argument #3:
+Move 546,R3
+# argument #4:
+Move 546,R4
+# argument #5:
+Move 546546,R5
+# argument #6:
+Move 32423543,R6
+# argument #7:
+Move 436376,R7
+# argument #8:
+Move 435234543,R8
+# argument #9:
+Move 4325,R9
+# argument #10:
+Move 34532,R10
+# argument #11:
+Move 3245,R11
+# argument #12:
+Move 34532,R12
+# argument #13:
+Move 62654,R13
+# argument #14:
+Move 7876,R14
+# argument #15:
+Move 3214,R15
+# argument #16:
+Move 45437,R16
+# argument #17:
+Move 9845,R17
+# argument #18:
+Move 1314,R18
+# argument #19:
+Move 35647,R19
+# argument #20:
+Move 8998,R20
+# call statement:
+StaticCall _C_doNothing(i2=R0,i42=R1,i3214324132=R2,i43215432=R3,i23142352=R4,i542112=R5,i5464372=R6,i452346562=R7,i3214352=R8,i234512=R9,i45572=R10,i432542=R11,i12342=R12,i43254354322=R13,i65465746522=R14,i6574657652=R15,i656746572=R16,i78572=R17,i2312342=R18,i22=R19,i435432=R20),R0
+Move R0,i17
+# argument #0:
+Move str2,R0
+Library __print(R0),R0
+# argument #0:
+Move i17,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+# argument #0:
+Move i17,R0
+# call statement:
+StaticCall _C_plus(i2=R0),R0
+Move R0,i17
+# argument #0:
+Move str3,R0
+Library __print(R0),R0
+# argument #0:
+Move i17,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+# argument #0:
+Move str4,R0
+Library __print(R0),R0
+# argument #0:
+Move i2,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+
+_error_exit:

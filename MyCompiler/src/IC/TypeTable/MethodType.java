@@ -37,7 +37,7 @@ public class MethodType extends Type {
 	public boolean equals(MethodType mt) {
 
 		//different ret. type.
-		if (mt.getReturnType().subtypeof(this.getReturnType()) == false) {
+		if (this.getReturnType().subtypeof(mt.getReturnType()) == false) {
 			return false;
 		}
 
@@ -48,7 +48,7 @@ public class MethodType extends Type {
 
 		//checking params. types respectively.
 		for (int i = 0; i < this.params.size(); i++) {
-			if (mt.getParamsTypes().get(i).subtypeof(params.get(i)) == false) {
+			if (params.get(i).subtypeof(mt.getParamsTypes().get(i)) == false) {
 				return false;
 			}
 		}

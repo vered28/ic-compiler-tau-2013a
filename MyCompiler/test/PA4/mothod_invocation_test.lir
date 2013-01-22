@@ -1,0 +1,228 @@
+# string literals
+str_null_ref: "Runtime Error: Null pointer dereference!"
+str_array_access: "Runtime Error: Array index out of bounds!"
+str_size: "Runtime Error: Array allocation with negative array size!"
+str_zero: "Runtime Error: Division by zero!"
+str1: """"
+str0: ""Current value: ""
+
+# class dispatch tables
+_DV_Calculator: []
+# fields offsets:
+
+_DV_A: []
+# fields offsets:
+
+
+# Runtime checks:
+__checkNullRef:
+Move a,Rc1
+Compare 0,Rc1
+JumpTrue __checkNullRef_err
+Return 9999
+__checkNullRef_err:
+Library __println(str_null_ref),Rdummy
+Jump _error_exit
+
+__checkArrayAccess:
+Move a,Rc1
+Move i,Rc2
+ArrayLength Rc1,Rc1
+Compare Rc1,Rc2
+JumpGE __checkArrayAccess_err
+Compare 0,Rc2
+JumpL __checkArrayAccess_err
+Return 9999
+__checkArrayAccess_err:
+Library __println(str_array_access),Rdummy
+Jump _error_exit
+
+__checkSize:
+Move n,Rc1
+Compare 0,Rc1
+JumpL __checkSize_err
+Return 9999
+__checkSize_err:
+Library __println(str_size),Rdummy
+Jump _error_exit
+
+__checkZero:
+Move b,Rc1
+Compare 0,Rc1
+JumpTrue __checkZero_err
+Return 9999
+__checkZero_err:
+Library __println(str_zero),Rdummy
+Jump _error_exit
+
+# methods
+_Calculator_plus:
+Move x2,R0
+Move y2,R1
+Add R1,R0
+Return R0
+
+_Calculator_minus:
+Move x2,R0
+Move y2,R1
+Sub R1,R0
+Return R0
+
+_Calculator_mul:
+# argument #0:
+Move x2,R0
+Move y2,R1
+Mul R1,R0
+Move R0,R0
+# call statement:
+StaticCall _Calculator_mod(x2=R0),R0
+Return R0
+
+_Calculator_mod:
+Move x2,R0
+Move 500,R1
+Mod R1,R0
+Return R0
+
+_Calculator_mix:
+Move 0,R0
+Move R0,i2
+_while_cond_label0:
+Move i2,R0
+Move 200,R1
+Compare R1,R0
+JumpL _true_label1
+Move 0,R0
+Jump _end_label1
+_true_label1:
+Move 1,R0
+_end_label1:
+Move R0,R0
+Compare 0,R0
+JumpTrue _end_label0
+# argument #0:
+# argument #0:
+Move y2,R0
+# argument #1:
+Move x2,R1
+# call statement:
+StaticCall _Calculator_mul(x2=R0,y2=R1),R0
+Move R0,R0
+# argument #1:
+# argument #0:
+Move x2,R1
+# argument #1:
+Move y2,R2
+# call statement:
+StaticCall _Calculator_plus(x2=R1,y2=R2),R1
+Move R1,R1
+# call statement:
+StaticCall _Calculator_minus(x2=R0,y2=R1),R0
+Move R0,R0
+Move R0,x2
+# argument #0:
+# argument #0:
+Move x2,R0
+# argument #1:
+Move x2,R1
+# call statement:
+StaticCall _Calculator_mul(x2=R0,y2=R1),R0
+Move R0,R0
+# argument #1:
+# argument #0:
+Move x2,R1
+# argument #1:
+Move y2,R2
+# call statement:
+StaticCall _Calculator_minus(x2=R1,y2=R2),R1
+Move R1,R1
+# call statement:
+StaticCall _Calculator_plus(x2=R0,y2=R1),R0
+Move R0,R0
+Move R0,y2
+Move i2,R0
+Move 1,R1
+Add R1,R0
+Move R0,R0
+Move R0,i2
+Jump _while_cond_label0
+_end_label0:
+# argument #0:
+# argument #0:
+Move x2,R0
+# argument #1:
+Move y2,R1
+Move 123,R2
+Sub R2,R1
+Move R1,R1
+# call statement:
+StaticCall _Calculator_mul(x2=R0,y2=R1),R0
+Move R0,R0
+# argument #1:
+# argument #0:
+Move 2,R1
+Move x2,R2
+Mul R2,R1
+Move R1,R1
+# argument #1:
+Move y2,R2
+# call statement:
+StaticCall _Calculator_mul(x2=R1,y2=R2),R1
+Move R1,R1
+# call statement:
+StaticCall _Calculator_minus(x2=R0,y2=R1),R0
+Move R0,R0
+Move R0,i2
+Return i2
+
+# main method
+_ic_main:
+Move 0,R0
+Move R0,i2
+Move 1,R0
+Move R0,val2
+_while_cond_label2:
+Move i2,R0
+Move 40,R1
+Compare R1,R0
+JumpL _true_label3
+Move 0,R0
+Jump _end_label3
+_true_label3:
+Move 1,R0
+_end_label3:
+Move R0,R0
+Compare 0,R0
+JumpTrue _end_label2
+# argument #0:
+Move val2,R0
+# argument #1:
+# argument #0:
+Move val2,R1
+# argument #1:
+Move 3,R2
+# call statement:
+StaticCall _Calculator_minus(x2=R1,y2=R2),R1
+Move R1,R1
+# call statement:
+StaticCall _Calculator_mix(x2=R0,y2=R1),R0
+Move R0,R0
+Move R0,val2
+# argument #0:
+Move str0,R0
+Library __print(R0),R0
+# argument #0:
+Move val2,R0
+Library __printi(R0),R0
+# argument #0:
+Move str1,R0
+Library __println(R0),R0
+Move i2,R0
+Move 1,R1
+Add R1,R0
+Move R0,R0
+Move R0,i2
+Jump _while_cond_label2
+_end_label2:
+
+_error_exit:

@@ -57,7 +57,7 @@ public class BlockSymbolTable extends SymbolTable {
 	}
 	
 	public boolean isVarField (String name){
-		if (entries.containsKey(name)) return false;
+		if (entries.containsKey(name) || !(parentSymbolTable instanceof BlockSymbolTable)) return false;
 		else return ((BlockSymbolTable)parentSymbolTable).isVarField(name);
 	}
 
