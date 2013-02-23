@@ -332,7 +332,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 		if (icClass.hasSuperClass()){
 			return getFieldASTNodeRec(global.getClass(icClass.getSuperClassName()).getIcClass(), fieldName);
 		} else
-			System.err.println("*** BUG: TranslatePropagatingVisitor getFieldASTNodeRec bug");
+			System.err.println("error in getFieldASTNodeRec");
 		return null;
 	}
 	
@@ -819,7 +819,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 			tr += "Mod R"+(d+1)+",R"+d+"\n";
 			break;
 		default:
-			System.err.println("*** YOUR PARSER SUCKS ***");
+			System.err.println("error in translate");
 		}
 		
 		return new LIRUpType(tr, LIRFlagEnum.REGISTER,"R"+d);
@@ -885,7 +885,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 			tr += "JumpFalse "+trueLabel+"\n"; 
 			break;
 		default:
-			System.err.println("*** YOUR PARSER SUCKS ***");	
+			System.err.println("error in translate");	
 		}
 		tr += "Move 0,R"+d+"\n";
 		tr += "Jump "+endLabel+"\n";
@@ -1040,7 +1040,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 		case EXT_VAR_LOCATION: return "MoveField ";
 		case ARR_LOCATION: return "MoveArray ";
 		default:
-			System.err.println("*** BUG: TranslatePropagatingVisitor: unhandled LIR instruction type");
+			System.err.println("error: unhandled LIR instruction type");
 			return null;
 		}
 	}
