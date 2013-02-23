@@ -80,7 +80,7 @@ public class OptTranslatePropagatingVisitor extends TranslatePropagatingVisitor{
 		lirBuffer += "str_zero: \"Runtime Error: Division by zero!\"\n";
 		
 		for (String strLiteral: this.stringLiterals.keySet()){
-			lirBuffer += this.getStringLiterals().get(strLiteral)+": \""+strLiteral+"\"\n";
+			lirBuffer += this.getStringLiterals().get(strLiteral)+": "+strLiteral+"\n";
 		}
 		lirBuffer += "\n";
 		

@@ -135,7 +135,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 		lirBuffer += "str_zero: \"Runtime Error: Division by zero!\"\n";
 		
 		for (String strLiteral: this.stringLiterals.keySet()){
-			lirBuffer += this.getStringLiterals().get(strLiteral)+": \""+strLiteral+"\"\n";
+			lirBuffer += this.getStringLiterals().get(strLiteral)+": "+strLiteral+"\n";
 		}
 		lirBuffer += "\n";
 		
