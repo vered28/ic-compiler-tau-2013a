@@ -81,9 +81,11 @@ Jump _error_exit
 # methods
 _A_init:
 Move 5,R0
-Move R0,x1
+Move this,R1
+MoveField R0,R1.1
 Move 10,R0
-Move R0,y1
+Move this,R1
+MoveField R0,R1.2
 Return 9999
 
 _A_foo:
