@@ -280,7 +280,6 @@ public class Compiler {
 				buff.close();
 			} catch (IOException e) {
 				System.out.println("Failed writing to file: " + lirFileName);
-				e.printStackTrace();
 			}
 			
 		}
