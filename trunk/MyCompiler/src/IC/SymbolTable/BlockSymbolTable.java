@@ -64,11 +64,8 @@ public class BlockSymbolTable extends SymbolTable {
 			return false;	
 		}
 		
-		if (s.getKind() == Kind.FIELD) {
-			return true;
-		}
-		
-		return false;
+		return s.getKind() == Kind.FIELD;
+			
 	
 	}
 
