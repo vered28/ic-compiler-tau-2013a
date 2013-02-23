@@ -282,9 +282,7 @@ public class Compiler {
 				System.out.println("Failed writing to file: " + lirFileName);
 				e.printStackTrace();
 			}
-			System.out.println("LIR translation");
-			System.out.println("===============");
-			System.out.println(tr);
+			
 		}
         
 		
