@@ -113,7 +113,7 @@ public class Compiler {
         	if (s.equals("-opt-lir")) { //-opt-lir requested
         		
         		if (optlir_flag){ //already requested -opt-lir earlier
-        			System.out.println("Error: -print-lir is given more than once.");
+        			System.out.println("Error: -opt-lir is given more than once.");
         			System.exit(1);
         		} else {
         			optlir_flag = true;
