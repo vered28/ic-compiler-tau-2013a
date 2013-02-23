@@ -56,9 +56,20 @@ public class BlockSymbolTable extends SymbolTable {
 		return vs;
 	}
 	
-	public boolean isVarField (String name){
-		if (entries.containsKey(name)) return false;
-		else return ((BlockSymbolTable)parentSymbolTable).isVarField(name);
+	public boolean isVarField (String name) { 
+		
+		Symbol s = super.lookup(name);
+		
+		if (s == null) { //never true.
+			return false;	
+		}
+		
+		if (s.getKind() == Kind.FIELD) {
+			return true;
+		}
+		
+		return false;
+	
 	}
 
 	@Override
