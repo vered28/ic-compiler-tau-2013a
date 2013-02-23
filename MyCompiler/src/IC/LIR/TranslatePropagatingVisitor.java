@@ -717,7 +717,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 	 * - return LIR code
 	 */
 	public LIRUpType visit(NewClass newClass, Integer d){
-		System.out.println(newClass.getName()+"\n\n");
+
 		ClassLayout thisClassLayout = classLayouts.get(newClass.getName());
 		String tr = "Library __allocateObject("+thisClassLayout.getAllocSize()+"),R"+d+"\n";
 		tr += "MoveField _DV_"+thisClassLayout.getClassName()+",R"+d+".0\n";
