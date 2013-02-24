@@ -2,6 +2,7 @@ package IC.SemanticAnalysis;
 
 import java.util.*;  
 
+import IC.LiteralTypes;
 import IC.AST.*;
 import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.FieldSymbol;
@@ -25,6 +26,9 @@ public class SemanticChecks implements Visitor {
 	
 	private boolean insideStatic = false;
 	private int insideLoop = 0;  //to deal with nested loops.
+	
+	//to know when we got to visit Literal form MathUnaryOp, and check integer literal range correctly.
+	private boolean negativeIntLiteral = false;  
 
 	/**
 	 * Constructor.
@@ -889,11 +893,20 @@ public class SemanticChecks implements Visitor {
 	/**
 	 * Visitor for MathUnaryOp:
 	 * Checks that the operand is of type int.
+	 * 
 	 * Returns result type.
 	 *  
 	 */
 	public Object visit(MathUnaryOp unaryOp) {
+		
+		if (unaryOp.getOperand() instanceof Literal) {
+			negativeIntLiteral = true;  //may not be integer literal (checked in literal visitor).
+		}
+		
 		IC.TypeTable.Type uopType = (IC.TypeTable.Type) unaryOp.getOperand().accept(this);
+		
+		negativeIntLiteral = false;
+		
 		if (uopType == null) {
 			return null;
 		}
@@ -939,17 +952,33 @@ public class SemanticChecks implements Visitor {
 
 	/**
 	 * Literal visitor.
+	 * 
+	 * Checks if integer literal is in range.
+	 * 
 	 * Returns primitive type.
 	 */
 	public Object visit(Literal literal) {
 		IC.LiteralTypes type = literal.getType();
 		
+		String val = literal.getValue().toString();
+		
 		try {
 			switch (type) {
 				case STRING:
 					return TypeTable.getType("string");
-				case INTEGER:
+				case INTEGER: {
+					try {
+						if (negativeIntLiteral) {   //we came to this visit for MathUnaryOp.
+							val = "-" + val;  
+						}
+						Integer.parseInt(val);  
+					} catch (NumberFormatException e) {
+						System.out.println(new SemanticError("Integer out of range", literal.getLine(), val));
+						return null;
+					}
+					
 					return TypeTable.getType("int");
+				}
 				case TRUE:
 					return TypeTable.getType("boolean");
 				case FALSE:
