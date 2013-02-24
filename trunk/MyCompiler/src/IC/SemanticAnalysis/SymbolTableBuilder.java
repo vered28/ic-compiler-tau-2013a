@@ -12,7 +12,7 @@ import IC.TypeTable.TypeTable;
 /**
  * Visitor for building symbol tables.
  * 
- * Performs some semantic checks (Library name, int. literal out of range).
+ * Performs some semantic checks (for example: correct Library name).
  * 
  */
 public class SymbolTableBuilder implements PropagatingVisitor {
@@ -447,14 +447,6 @@ public class SymbolTableBuilder implements PropagatingVisitor {
 	}
 
 	public Object visit(Literal literal, Object scope) {
-		
-		if (literal.getType() == LiteralTypes.INTEGER) {
-			try {
-				Integer.parseInt(literal.getValue().toString());
-			} catch (NumberFormatException e) {
-				return handleSemanticError(new SemanticError("Integer out of range", literal.getValue().toString()), literal);
-			}
-		}
 		
 		literal.setEnclosingScope((SymbolTable)scope);
 		return true;

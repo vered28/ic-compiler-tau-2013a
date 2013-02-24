@@ -71,9 +71,9 @@ public class Compiler {
                 	System.out.println("Error: Library path is given more than once.");
                     System.exit(1);
                 } else {
-                	libic_flag = true;
+                	libic_flag = true; 
                 	libic_path = s.substring(2);  //given lib. path
-                	continue;
+                	continue; 
                 }
         	}
         	

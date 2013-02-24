@@ -70,9 +70,9 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 	// string literals counter
 	protected int stringLiteralsCounter = 0;
 	// string literals map, each element literal string is mapped to the format 'str<i>'
-	protected Map<String,String> stringLiterals = new HashMap<String,String>();
+	protected Map<String,String> stringLiterals = new LinkedHashMap<String,String>();
 	// class layouts
-	protected Map<String,ClassLayout> classLayouts = new HashMap<String,ClassLayout>();
+	protected Map<String,ClassLayout> classLayouts = new LinkedHashMap<String,ClassLayout>();
 	// class dispatch tables, each element in the format: '_DV_<class name>: [<method1>,<method2>,...]'
 	protected List<String> classDispatchTable = new ArrayList<String>();
 	// methods procedural code string representation
