@@ -5,7 +5,7 @@ package IC.LIR;
  */
 public class LIRUpType {
 
-	private String	LIRCode;
+	private String LIRCode;
 	private LIRFlagEnum LIRInstType;
 	private String targetRegister;
 
