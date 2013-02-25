@@ -960,13 +960,14 @@ public class SemanticChecks implements Visitor {
 	public Object visit(Literal literal) {
 		IC.LiteralTypes type = literal.getType();
 		
-		String val = literal.getValue().toString();
+		String val = "";
 		
 		try {
 			switch (type) {
 				case STRING:
 					return TypeTable.getType("string");
 				case INTEGER: {
+					val = literal.getValue().toString();
 					try {
 						if (negativeIntLiteral) {   //we came to this visit for MathUnaryOp.
 							val = "-" + val;  

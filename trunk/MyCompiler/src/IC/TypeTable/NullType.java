@@ -16,7 +16,7 @@ public class NullType extends Type {
 	 */
 	public boolean subtypeof(Type t) {
 		
-		//returns true iff t is "int", "boolean" or "void" type.
+		//returns true iff t isn't "int", "boolean" or "void" type.
 		if (TypeTable.isPrimitiveType(t)) {
 			return false;
 		} else {

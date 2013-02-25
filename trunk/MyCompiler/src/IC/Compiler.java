@@ -266,16 +266,21 @@ public class Compiler {
 		/* LIR code translation phase */
 		
 		if (printlir_flag) {
-			GlobalSymbolTable global = (GlobalSymbolTable)globalSymbolTable;		
+			GlobalSymbolTable global = (GlobalSymbolTable)globalSymbolTable;	
+			
+			//"regular" or optimal translation.
 			TranslatePropagatingVisitor translator = optlir_flag ? new OptTranslatePropagatingVisitor(global) : new TranslatePropagatingVisitor(global);
+			
 			if (optlir_flag) {
-				int progWeight = (Integer)root.accept(new RegCounterVisitor());
+				int programWeight = (Integer)root.accept(new RegCounterVisitor());
 			}
-			String tr = root.accept(translator, 0).getLIRCode();
+			
+			String trans = root.accept(translator, 0).getLIRCode();
 			String lirFileName = args[0].substring(0, args[0].length()-2)+"lir";
+			
 			try {
 				BufferedWriter buff = new BufferedWriter(new FileWriter(lirFileName));
-				buff.write(tr);
+				buff.write(trans);
 				buff.flush();
 				buff.close();
 			} catch (IOException e) {
