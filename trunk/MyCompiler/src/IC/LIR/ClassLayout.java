@@ -89,11 +89,16 @@ public class ClassLayout {
 			nameToMethod.put(m.getName(), m);
 		}
 		
-		for(Method m: icClass.getMethods()){
+		for(Method m: superLayout.getICClass().getMethods()){
 			if (m.isStatic())
 				nameToMethod.put(m.getName(), m);
 		}
 		
+		for(Method m: icClass.getMethods()){
+			if (m.isStatic())
+				nameToMethod.put(m.getName(), m);
+		}
+		 
 	}
 	
 	
