@@ -140,7 +140,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 		lirBuffer += "\n";
 		
 		// (2) insert class dispatch tables
-		lirBuffer += "# class dispatch tables\n";
+		lirBuffer += "# class dispatch tables\n"; 
 		for (String classDisTab: this.classDispatchTable){
 			lirBuffer += classDisTab+"\n";
 		}
@@ -605,7 +605,7 @@ public class TranslatePropagatingVisitor implements LIRPropagatingVisitor<Intege
 		
 		// check if the call is to a library (static) method
 		if (call.getClassName().equals("Library")){
-			return libraryCallVisit(tr,call,d);
+			return libraryCallVisit(tr,call,d); 
 		}
 		
 		// call statement
