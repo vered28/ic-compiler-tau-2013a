@@ -28,7 +28,8 @@ public class ClassLayout {
 		
 		// put methods
 		for(Method m: icClass.getMethods()){
-			methodToOffset.put(m, methodCounter++);
+			if (!m.isStatic())
+				methodToOffset.put(m, methodCounter++);
 		}
 		
 		// put fields
@@ -37,7 +38,7 @@ public class ClassLayout {
 		}
 		
 		// create string to method
-		for(Method m: methodToOffset.keySet()){
+		for(Method m: icClass.getMethods()){
 			nameToMethod.put(m.getName(), m);
 		}
 	}
@@ -55,11 +56,13 @@ public class ClassLayout {
 		
 		// set offsets
 		methodCounter = methodToOffset.size();
-		fieldCounter = fieldToOffset.size();
+		fieldCounter = 1+fieldToOffset.size();
 		
 		// add new methods and override exiting ones
 		for (Method m: icClass.getMethods()){
 			boolean isOverriden = false;
+			
+			if (m.isStatic()) continue;
 			
 			for (Method existingMethod: methodToOffset.keySet()){
 				// if method already exist, replace it with the overriding
@@ -85,6 +88,12 @@ public class ClassLayout {
 		for(Method m: methodToOffset.keySet()){
 			nameToMethod.put(m.getName(), m);
 		}
+		
+		for(Method m: icClass.getMethods()){
+			if (m.isStatic())
+				nameToMethod.put(m.getName(), m);
+		}
+		
 	}
 	
 	
@@ -227,7 +236,7 @@ public class ClassLayout {
 		
 		// get all fields and offsets as comments
 		String fieldsOffsets = "# fields offsets:\n";
-		for(int i = 0; i < fieldCounter; i++){
+		for(int i = 1; i < fieldCounter; i++){
 			for (Field f: fieldToOffset.keySet()){
 				// if the offset is correct, insert field and its offset
 				if (fieldToOffset.get(f) == i){
