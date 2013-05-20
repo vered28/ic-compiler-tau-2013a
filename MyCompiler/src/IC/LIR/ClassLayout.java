@@ -1,6 +1,8 @@
 package IC.LIR;
 
-import java.util.*;
+import java.util.*;  
+
+import IC.BinaryOps;
 import IC.AST.*;
 import IC.SymbolTable.*;
 
